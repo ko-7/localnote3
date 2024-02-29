@@ -1,19 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import { KeyboardAvoidingView, View, Text, Button, TextInput, TouchableOpacity  } from "react-native";
 
-//スタイルの読み込み
-import { styles } from "../style"
+import { styles } from "../style"   //スタイルの読み込み
 
 //画面遷移用のパッケージ＆設定ファイル
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../type";
 
-//画面越しの値共有
-import { MyContext } from "../components/MyContext";
-
-//DB操作
-import { saveItem, loadAllItems, loadItem, deleteItem } from "../store";
+import { GlobalValue } from "../GlobalValue";    //画面越しの値共有
+import { saveItem, loadAllItems, loadItem, deleteItem } from "../store";    //DB操作
 
 
 export const FileEditViewScreen = () => {
@@ -21,7 +17,7 @@ export const FileEditViewScreen = () => {
     const route = useRoute<RouteProp<RootStackParamList, "NoteView">>();
 
     //画面越しの値共有
-    const {sharedValue, updateSharedValue} = useContext(MyContext);
+    const {globalValue, updateGlobalValue} = useContext(GlobalValue);
 
     //ステートの定義
     const [ noteId, setNoteId ] = useState<number|null>(route.params.noteId ? route.params.noteId : null);
@@ -39,7 +35,7 @@ export const FileEditViewScreen = () => {
             return unsubscribe;
         });
     }
-    
+
 
     //保存処理
     const onPressSave = async () => {

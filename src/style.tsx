@@ -4,8 +4,8 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
     //共通
     container: {
-        padding: 10,
         flex: 1,
+        padding: 10,
     },
     textLarge:  { fontSize: 24, },
     textMedium: { fontSize: 16, },
@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
 
     //Footer
     footer: {
-        height: 30,
+        height: "100%",
         width: "100%",
         position: "absolute",
         bottom: 0,
@@ -30,16 +30,13 @@ export const styles = StyleSheet.create({
         alignItems: "center",
     },
     footerIcon: {
-        width: 24,
-        height: 24,
-        fill: "#11f",
+        flex: 1,
         justifyContent: "center",
         alignItems: "center",
     },
 
     //DirViewScreen
     list: {
-        flex: 1,
     },
     fab: {
         position: "absolute",
@@ -47,9 +44,9 @@ export const styles = StyleSheet.create({
         bottom: 32,
     },
     dataRow: {
-        flex: 1,
         paddingHorizontal: 10,
-        paddingVertical: 5,
+        paddingVertical: 10,
+        height: 54,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -64,13 +61,14 @@ export const styles = StyleSheet.create({
     actions: {
         flexDirection: "row"
     },
+    makeDirModalActions: {
+        
+    },
 
     //NoteViewScreen
     textArea: {
         flex: 1,
         alignItems: "flex-start",
         justifyContent: "flex-start",
-    }
-
-    
+    },
 })

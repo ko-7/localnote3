@@ -1,3 +1,6 @@
+import { AppRegistry } from "react-native";
+// import { name as appName} from '../app.json';
+import App from '../App';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
@@ -46,4 +49,42 @@ export const deleteItem = async (noteId:number) => {
     }
 }
 
+//アプリ初回起動時に以下データ作成//////////////////////////
+// dirOrNote：dir
+// text     ：初期フォルダ
+// noteId   ：0
+// childDir ：[]
+// childNote：[]
+const checkIfAppLaunchedBefore = async () => {
+    try{
+        const launchedBefore = await AsyncStorage.getItem('@MyApp:launchBefore');
+        return !!launchedBefore;
+    }catch(error){
+        console.error('Error checking app launch status:', error);
+        return false;
+    }
+}
+const initializeAppData = async () => {
+    try{
+        const initialData = {
+            dirOrNote: 'dir',
+            text     : '初期フォルダ',
+            noteId   : 0,
+            childDir : [],
+            childNote: [],
+        }
 
+        await AsyncStorage.setItem('@MyApp:launchedBefore', 'true');
+        await AsyncStorage.setItem('@MyApp:data', JSON.stringify(initialData));
+    }catch(error){
+        console.error('Error initializing app data:', error);
+    }
+}
+export const createDefaultData = async () => {
+const launchedBefore = await checkIfAppLaunchedBefore();
+if(!launchedBefore){
+    await initializeAppData();
+}
+}
+
+  
