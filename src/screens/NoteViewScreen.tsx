@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { KeyboardAvoidingView, View, Text, Button, TextInput } from "react-native";
+import { KeyboardAvoidingView, View, Text, Pressable, TextInput } from "react-native";
 import { styles } from "../style"   // スタイルの読み込み
 
 // 画面遷移用のパッケージ＆設定ファイル
@@ -7,7 +7,6 @@ import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../type";
 
-import { GlobalValue } from "../globalValue";    // 画面越しの値共有
 import { saveItem, loadOneItem, deleteItem } from "../store";    // DB操作
 
 
@@ -15,21 +14,29 @@ export const FileEditViewScreen: React.FC = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, "NoteView">>();
     const route = useRoute<RouteProp<RootStackParamList, "NoteView">>();
 
-    // 画面越しの値共有
-    const {globalValue, updateGlobalValue} = useContext(GlobalValue);
 
     // ステートの定義
     const [ id, setId ] = useState<number|null>(route.params.id);
     const [ note, setNote ] = useState<any>({});
     const [ text, setText ] = useState<string>("");
+    const [ parentDirData, setParentDirData ] = useState<any>({});
 
-    // Headerのタイトルをセット
-    useEffect(() => {
+    const initialize = async () => {
+
+        // 親ディレクトリのデータ取得（Headerタイトルに表示させるため）
+        let parentDirData = await loadOneItem(route.params.parentDirId);
+        await setParentDirData(parentDirData);
 
         // Headerタイトルの表示
         navigation.setOptions({
-            title: `${globalValue.currentDirData.text}`
+            title: ``,                       // ⇐タイトル無し
+            // title: `${parentDirData.text}`   // ⇐親ディレクトリのタイトルを表示
         })
+    }
+
+    // Headerのタイトルをセット
+    useEffect(() => {
+        initialize();
     }, [navigation])
 
     // 既存データの編集の際はデータを取得
@@ -48,11 +55,11 @@ export const FileEditViewScreen: React.FC = () => {
     // 保存処理
     const onPressSave = async () => {
         if(id){
-            await saveItem(id, "note", text, globalValue.currentDirData.id);
+            await saveItem(id, "note", text, parentDirData.id);
         }else{
-            await saveItem(Date.now(),"note", text, globalValue.currentDirData.id);
+            await saveItem(Date.now(),"note", text, parentDirData.id);
         }
-        navigation.navigate("DirView", {id: globalValue.currentDirData.id});
+        navigation.navigate("DirView", {id: parentDirData.id});
     };
 
 
@@ -65,7 +72,9 @@ export const FileEditViewScreen: React.FC = () => {
                 placeholder="メモを入力してください"
                 defaultValue={note.text}
             />
-            <Button title="保存" onPress={onPressSave}></Button>
+            <Pressable onPress={onPressSave}>
+                <Text>保存</Text>
+            </Pressable>
         </KeyboardAvoidingView>
     )
 }

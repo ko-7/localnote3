@@ -46,7 +46,7 @@ export default function App(){
           <View style={{flex:0.9}}>
             <Stack.Navigator initialRouteName="DirView" screenOptions={{headerTitleAlign:'center'}}>
               <Stack.Group screenOptions={()=>({headerRight:() => (<HeaderTitle />)})}>
-                <Stack.Screen name="DirView" component={DirViewScreen} />
+                <Stack.Screen name="DirView" component={DirViewScreen} initialParams={{id:0}} />
                 {/* <Stack.Screen name="DirView" component={DirViewScreen} options={{title: "ディレクトリビュー"}} /> */}
                 <Stack.Screen name="NoteView" component={NoteViewScreen} />
                 {/* <Stack.Screen name="NoteView" component={NoteViewScreen} options={{title: "ファイルビュー"}} /> */}

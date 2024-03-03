@@ -20,7 +20,7 @@ export async function saveItem(id:number, dirOrNote:string, text:string|null, pa
 
 
 //１件取得
-export async function loadOneItem(id:number){
+export async function loadOneItem(id:number|null){
     const key:string = `${id}`
     try{
         const item:any = await AsyncStorage.getItem(key);
@@ -35,7 +35,7 @@ export async function loadOneItem(id:number){
 export async function loadSomeItems(ids:any|null){
     const keys:any = ids;
     const someItems = await AsyncStorage.multiGet(keys);
-    return someItems.map(item => JSON.parse(`${item[1]}`));
+    return someItems?.map(item => JSON.parse(`${item[1]}`));
 }
 
 
@@ -60,7 +60,7 @@ export async function loadAllItems(){
     const keys:any = await AsyncStorage.getAllKeys();
     keys.sort();
     const allItems = await AsyncStorage.multiGet(keys);
-    return allItems.map(item => JSON.parse(`${item[1]}`));
+    return allItems?.map(item => JSON.parse(`${item[1]}`));
 }
 
 // AsyncStorageのデータ全件削除
