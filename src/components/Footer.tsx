@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { SafeAreaView, View, Text, Pressable, TextInput, Modal } from "react-native";
 // import Modal from 'react-native-modal';
 import { styles } from "../style";  // スタイルの読み込み
@@ -16,10 +16,23 @@ import Svg,  { Path } from 'react-native-svg';      // SVGを使うためのパ�
 // Footer
 export const Footer: React.FC = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-    // const route = useRoute<RouteProp<RootStackParamList>>();
+
 
     // 画面越しの値共有
     const {globalValue, updateGlobalValue} = useContext(GlobalValue);
+
+
+    const [ currentDirData, setCurrentDirData ] = useState<any>({});
+    const initialize = async () => {
+
+        // カレントディレクトリのデータをDBから取得する
+        let currentDirData = await loadOneItem(globalValue.currentDirData.id);
+        await setCurrentDirData(currentDirData);
+    }
+    useEffect(() => {
+        initialize();
+    }, [navigation])
+
 
     // モーダル用のステート、関数
     const [ isModalVisible, setIsModalVisible ] = useState<boolean>(false);
@@ -33,10 +46,10 @@ export const Footer: React.FC = () => {
 
         // ディレクトリ作成
         let newId = Date.now()
-        await saveItem(newId, "dir", dirName, globalValue.currentDirData.id);
+        await saveItem(newId, "dir", dirName, currentDirData.id);
 
         // 親DirのchildDirに追加する
-        let parentDirData = globalValue.currentDirData;
+        let parentDirData = currentDirData;
         parentDirData.childDir.push(newId);
         const { id, dirOrNote, text, parentDirId, childDir, childNote } = parentDirData
         saveItem(id, dirOrNote, text, parentDirId, childDir, childNote);
@@ -58,16 +71,16 @@ export const Footer: React.FC = () => {
 
         // ノートの作成
         let newId = Date.now()
-        await saveItem(newId, "note", null, globalValue.currentDirData.id);
+        await saveItem(newId, "note", null, currentDirData.id);
 
         // 親DirのchildNoteに追加する
-        let parentDirData = globalValue.currentDirData;
+        let parentDirData = currentDirData;
         parentDirData.childNote.push(newId);
         const { id, dirOrNote, text, parentDirId, childDir, childNote } = parentDirData
         saveItem(id, dirOrNote, text, parentDirId, childDir, childNote);
 
         // 作成したノートに移動
-        navigation.navigate("NoteView", {id: newId});
+        navigation.navigate("NoteView", {id: newId, parentDirId: currentDirData.id});
     }
 
 

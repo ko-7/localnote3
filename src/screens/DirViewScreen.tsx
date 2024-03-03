@@ -58,6 +58,8 @@ export const DirViewScreen: React.FC = () => {
     const [ allItems, setAllItems ] = useState<any>({});    //⇐開発用
     const [ allItemsChildDir, setAllItemsChildDir ] = useState<any>({});
     const [ allItemsChildNote, setAllItemschildNote ] = useState<any>({});
+
+    
     const initialize = async () => {
 
         // ↓↓　開発用コード　↓↓　////////////////////////
