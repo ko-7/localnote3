@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SafeAreaView, View, Text, Button, FlatList, TouchableOpacity } from "react-native";
+import { SafeAreaView, View, Text, Button, FlatList, Pressable } from "react-native";
 
 import { styles } from "../style"   //スタイルの読み込み
-import { GlobalValue } from "../GlobalValue";   //画面越しの値共有
+import { GlobalValue } from "../globalValue";   //画面越しの値共有
 
 
 export const HeaderTitle = () => {
@@ -16,9 +16,12 @@ export const HeaderTitle = () => {
     }
 
 
+
     return(
-        <TouchableOpacity onPress={() => onPressIsEdit()} >
-            <Text style={styles.editButton}>編集</Text>
-        </TouchableOpacity>
+        <View>
+            <Pressable onPress={() => onPressIsEdit()} >
+                <Text style={styles.editButton}>編集</Text>
+            </Pressable>
+        </View>
     );
   }
