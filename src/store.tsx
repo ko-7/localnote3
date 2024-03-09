@@ -1,8 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
 // 保存
 export async function saveItem(id:number, dirOrNote:string, text:string|null, parentDirId:number|null, childDir:number[]=[], childNote:number[]=[]):Promise<void|Error>{
+
     const key:string = `${id}`;
 
     //JSON文字列に変換　※AsyncStorageはJSON文字列しか格納できない
@@ -15,12 +15,14 @@ export async function saveItem(id:number, dirOrNote:string, text:string|null, pa
         childNote,
     });
 
-    await AsyncStorage.setItem(key, value);
+        await AsyncStorage.setItem(key, value);
 }
 
 
 //１件取得
 export async function loadOneItem(id:number|null){
+
+    // const key:string = `3`
     const key:string = `${id}`
     try{
         const item:any = await AsyncStorage.getItem(key);
@@ -33,7 +35,10 @@ export async function loadOneItem(id:number|null){
 
 // 複数件取得
 export async function loadSomeItems(ids:any|null){
-    const keys:any = ids;
+    if(ids == null){
+        return [];
+    }
+    const keys:any = ids?.map(String);
     const someItems = await AsyncStorage.multiGet(keys);
     return someItems?.map(item => JSON.parse(`${item[1]}`));
 }
@@ -81,7 +86,7 @@ export async function getAllKeys():Promise<any[]|Error>{
 
 
 
-//アプリ初回起動時に以下データ作成/////////////////////////////////////////
+// アプリ初回起動時に以下データ作成/////////////////////////////////////////
 export async function createInitialData(){
     try {
 
@@ -108,6 +113,7 @@ export async function createInitialData(){
             // 初期データをAsyncStorageに保存
             await AsyncStorage.setItem(`${key}`, JSON.stringify(initialData));
             
+            console.log('initial data create!');
         }
     } catch(error){
         console.error('Error initializing app data:', error);

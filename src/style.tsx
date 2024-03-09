@@ -5,8 +5,10 @@ export const styles = StyleSheet.create({
     //共通
     container: {
         flex: 1,
-        padding: 10,
     },
+    mainWrapper: { 
+        padding: 10,
+     },
     textLarge:  { fontSize: 24, },
     textMedium: { fontSize: 16, },
     textSmall:  { fontSize: 12, },
@@ -19,12 +21,9 @@ export const styles = StyleSheet.create({
 
     //Footer
     footer: {
-        height: "100%",
-        width: "100%",
-        position: "absolute",
-        bottom: 0,
+        flex: 1,
         backgroundColor: "#555",
-        display: "flex",
+        // display: "flex",
         flexDirection: "row",
         justifyContent: "space-around",
         alignItems: "center",
@@ -33,6 +32,47 @@ export const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+    },
+    footerModal: {
+        flex:1,
+        // marginHorizontal: "auto",
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor: '#00f',
+    },
+    footerModalContent: {
+        flex:1,
+        justifyContent:'flex-start',
+        alignItems:'center',
+    },
+    footerModalTitle: {
+        fontSize: 16,
+        paddingTop: 50,
+        marginLeft: "auto",
+        marginRight: "auto",
+        marginBottom: 30,
+    },
+    footerModalTextInput: {
+        width: "80%",
+        marginBottom: 30,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderWidth: 1,
+        borderColor: "#aaa",
+        borderRadius: 10,
+        fontSize: 16,
+    },
+    footerModalActionButtons:{
+        flexDirection: "row",
+    },
+    footerModalActionButton: {
+        width: 100,
+        marginHorizontal: 10,
+        paddingHorizontal: 10,
+    },
+    footerModalActionButtonText: {
+        textAlign: "center",
+        color: "#33f",
     },
 
     //DirViewScreen
@@ -61,9 +101,7 @@ export const styles = StyleSheet.create({
     actions: {
         flexDirection: "row"
     },
-    makeDirModalActions: {
-        
-    },
+
 
     //NoteViewScreen
     textArea: {

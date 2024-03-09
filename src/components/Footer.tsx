@@ -8,28 +8,41 @@ import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../type";
 
-import { GlobalValue } from "../globalValue";       // 画面越しの値共有
-import { saveItem, loadAllItems, loadOneItem } from "../store";  // DB操作
-import Svg,  { Path } from 'react-native-svg';      // SVGを使うためのパッケージ
+import { saveItem, loadOneItem } from "../store";  // DB操作
+import Svg,  { Path } from 'react-native-svg';     // SVGを使うためのパッケージ
 
 
 // Footer
-export const Footer: React.FC = () => {
+export const Footer: React.FC<{screen:string}> = ({screen}) => {
+
+    return (
+        <SafeAreaView style={styles.footer}>
+            {
+                screen == "DirView"
+                    ? <ActionButtons />
+                    : null
+            }
+        </SafeAreaView>
+    )
+}
+
+
+
+const ActionButtons = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+    const route = useRoute<RouteProp<RootStackParamList, "NoteView">>();
 
-
-    // 画面越しの値共有
-    const {globalValue, updateGlobalValue} = useContext(GlobalValue);
 
 
     const [ currentDirData, setCurrentDirData ] = useState<any>({});
-    const initialize = async () => {
-
-        // カレントディレクトリのデータをDBから取得する
-        let currentDirData = await loadOneItem(globalValue.currentDirData.id);
-        await setCurrentDirData(currentDirData);
-    }
     useEffect(() => {
+        const initialize = async () => {
+
+            // カレントディレクトリのデータをDBから取得する
+            let currentDirData = await loadOneItem(route.params.id);
+            // let currentDirData = await loadOneItem(globalValue.currentDirData.id);
+            await setCurrentDirData(currentDirData);
+        }
         initialize();
     }, [navigation])
 
@@ -39,6 +52,7 @@ export const Footer: React.FC = () => {
     const toggleModal = () => {
         setIsModalVisible(!isModalVisible)
     }
+
 
     // ディレクトリ作成機能
     const [ dirName, setDirName ] = useState<string>("");  // ⇐モーダルのフォルダ名入力欄で入力する
@@ -54,20 +68,16 @@ export const Footer: React.FC = () => {
         const { id, dirOrNote, text, parentDirId, childDir, childNote } = parentDirData
         saveItem(id, dirOrNote, text, parentDirId, childDir, childNote);
 
-        // グローバル変数の更新　※JSON.parse(JSON.srtingify())でディープコピーする
-        let hereGlobalValue = JSON.parse(JSON.stringify(globalValue));
-        hereGlobalValue.currentDirData = await loadOneItem(newId);
-        await updateGlobalValue(hereGlobalValue);
+
 
         // Modalを閉じ、作成したフォルダに移動
         toggleModal();
-        navigation.navigate("DirView", {id: newId});
+        navigation.push("DirView", {id: newId});
     }
 
 
     // ノート作成機能
     const onPressMakeNote = async () => {
-        console.log('Note作成機能に入りました！')
 
         // ノートの作成
         let newId = Date.now()
@@ -80,16 +90,16 @@ export const Footer: React.FC = () => {
         saveItem(id, dirOrNote, text, parentDirId, childDir, childNote);
 
         // 作成したノートに移動
-        navigation.navigate("NoteView", {id: newId, parentDirId: currentDirData.id});
+        navigation.push("NoteView", {id: newId, parentDirId: currentDirData.id});
     }
 
 
-
     return (
-        <SafeAreaView style={styles.footer}>
+        <View style={styles.footer}>
 
             {/* フォルダ作成ボタン */}
-            <View>
+            <View style={{flex:1}}>
+
                 {/* モーダルを表示させるボタン */}
                 <Pressable style={styles.footerIcon} onPress={toggleModal}>
                     <Svg width="36" height="80%" viewBox="0 0 24 24">
@@ -98,25 +108,24 @@ export const Footer: React.FC = () => {
                 </Pressable>
 
                 {/* モーダル本体 */}
-                <Modal visible={isModalVisible} style={{ flex:1, justifyContent:'center', alignItems:'center' }}>
-                    <View style={{ flex:1, justifyContent:'center', alignItems:'center', backgroundColor:"#fff", width:300, height: 100 }}>
-                        <Text>Modal Content</Text>
+                <Modal visible={isModalVisible} style={styles.footerModal}>
+                    <View style={styles.footerModalContent}>
+                        <Text style={styles.footerModalTitle}>フォルダ名を入力してください</Text>
 
                         {/* フォルダ名入力欄 */}
                         <TextInput
-                            style={styles.textArea}
+                            style={styles.footerModalTextInput}
                             onChangeText={(text) => setDirName(text)}
-                            multiline
                             placeholder="フォルダ名を入力してください"
                         />
 
                         {/* モーダル内のアクションボタン */}
-                        <View style={styles.makeDirModalActions}>
-                            <Pressable onPress={toggleModal}>
-                                <Text>キャンセル</Text>
+                        <View style={styles.footerModalActionButtons}>
+                            <Pressable style={styles.footerModalActionButton} onPress={toggleModal}>
+                                <Text style={styles.footerModalActionButtonText}>キャンセル</Text>
                             </Pressable>
-                            <Pressable onPress={onPressMakeDir}>
-                                <Text>作成</Text>
+                            <Pressable style={styles.footerModalActionButton} onPress={onPressMakeDir}>
+                                <Text style={styles.footerModalActionButtonText}>作成</Text>
                             </Pressable>
                         </View>
                     </View>
@@ -125,7 +134,7 @@ export const Footer: React.FC = () => {
 
 
             {/* メモ作成ボタン */}
-            <View>
+            <View style={{flex:1}}>
                 <Pressable style={styles.footerIcon} onPress={() => onPressMakeNote()}>
                     <Svg width="36" height="80%" viewBox="0 0 24 24">
                         <Path fill="#11f" d="M6 12h10v1h-10v-1zm7.816-3h-7.816v1h9.047c-.45-.283-.863-.618-1.231-1zm5.184 1.975v2.569c0 4.106-6 2.456-6 2.456s1.518 6-2.638 6h-7.362v-20h9.5c.312-.749.763-1.424 1.316-2h-12.816v24h10.189c3.163 0 9.811-7.223 9.811-9.614v-3.886c-.623.26-1.297.421-2 .475zm-13-3.975h6.5c-.134-.32-.237-.656-.319-1h-6.181v1zm17-2.5c0 2.485-2.017 4.5-4.5 4.5s-4.5-2.015-4.5-4.5 2.017-4.5 4.5-4.5 4.5 2.015 4.5 4.5zm-2-.5h-2v-2h-1v2h-2v1h2v2h1v-2h2v-1z"/>
@@ -133,9 +142,6 @@ export const Footer: React.FC = () => {
                 </Pressable>
             </View>
 
-        </SafeAreaView>
+        </View>
     )
 }
-
-
-

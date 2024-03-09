@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useLayoutEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { SafeAreaView, View, Text, FlatList, ScrollView, Pressable } from "react-native";
 import { styles } from "../style";                                              // スタイルの読み込み
 import { Footer } from "../components/Footer";
@@ -7,8 +7,9 @@ import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";  
 import { StackNavigationProp } from "@react-navigation/stack";                  // 画面遷移に必要
 import { RootStackParamList } from "../type";                                   // 画面遷移に必要
 
+import { GlobalValue } from "../globalValue";       // 画面越しの値共有
 import { UnixTimeFormat } from "../functions";      // 日時データ操作用パッケージ
-import { saveItem, loadOneItem, loadSomeItems, loadAllItems, deleteItem, deleteAllItems, getAllKeys } from "../store";// DB操作
+import { loadOneItem, loadSomeItems, loadAllItems, deleteItem, deleteAllItems, getAllKeys } from "../store";// DB操作
 import Svg,  { Path } from 'react-native-svg';      // SVGを使うためのパッケージ
 
 
@@ -17,40 +18,15 @@ export const DirViewScreen: React.FC = () => {
     const route = useRoute<RouteProp<RootStackParamList, "DirView">>();
 
 
-    // ヘッダー「編集」ボタンの実装
-    const [isEditable, setIsEditable] = useState<boolean>(false);
-    const updateIdEditable = () => {
-        setIsEditable((isEditable) => !isEditable);
-    }
-    useLayoutEffect(() => {
-
-        // Headerタイトルの設定
-        navigation.setOptions({
-            title: `${currentDirData?.text}`,
-        });
-
-        // Headerに「編集」ボタンを配置
-        navigation.setOptions({
-            headerRight: () => (
-                <View>
-                    <Pressable onPress={() => updateIdEditable()} >
-                        <Text style={styles.editButton}>編集</Text>
-                    </Pressable>
-                </View>
-            )
-        })
-    })
+    // 画面越しの値共有
+    const {globalValue, updateGlobalValue} = useContext(GlobalValue);
 
 
-    // 開いているフォルダの子フォルダ、子ファイルを取得する
-    const [ currentDirData, setCurrentDirData ] = useState<any>({});
-    const [ allItemsChildDir, setAllItemsChildDir ] = useState<any>({});
-    const [ allItemsChildNote, setAllItemschildNote ] = useState<any>({});
     const initialize = async () => {
 
         // カレントディレクトリのデータをDBから取得する
         let currentDirData = await loadOneItem(route.params.id);
-        setCurrentDirData(currentDirData);
+
 
         // 子フォルダ、子ノートの一覧データ取得
         let currentAllItemsChildDir = await loadSomeItems(currentDirData?.childDir);
@@ -58,26 +34,34 @@ export const DirViewScreen: React.FC = () => {
         let currentAllItemsChildNote = await loadSomeItems(currentDirData?.childNote);
         await setAllItemschildNote(currentAllItemsChildNote);
 
+
+        // Headerタイトルの表示
+        navigation.setOptions({
+            title: `${currentDirData?.text}`,
+        });
     }
+
+
+    // 開いているフォルダの子フォルダ、子ファイルを取得する
+    const [ allItemsChildDir, setAllItemsChildDir ] = useState<any>({});
+    const [ allItemsChildNote, setAllItemschildNote ] = useState<any>({});
     useEffect( () => {
+
+        // グローバル変数（currentDir）の編集　※asnync,awaitはuseEffectのコールバック関数に直接使えないのでこの関数を定義する
+        const editGlobalValueCurrentDir = async (id:number|null) => {
+            let hereGlobalValue = JSON.parse(JSON.stringify(globalValue));
+            hereGlobalValue.currentDirData = await loadOneItem(route.params.id);
+            await updateGlobalValue(hereGlobalValue);
+        }
+        editGlobalValueCurrentDir(route.params.id);
+
         initialize();
     }, [navigation, route.params.id]);
 
 
     // 削除処理
-    const onPressDelete = (deleteItemIsDirorNote:string, id:number):void => {
-        // データ削除
+    const onPressDelete = (id:number):void => {
         deleteItem(id);
-
-        // 親のchildDir,childNoteから削除する
-        if(deleteItemIsDirorNote == "dir"){
-            currentDirData.childDir = currentDirData.childDir.filter((item:number) => item !== id);
-        }else{
-            currentDirData.childNote = currentDirData.childNote.filter((item:number) => item !== id);
-        }
-        saveItem(currentDirData.id,currentDirData.dirOrnote, currentDirData.text, currentDirData.parentDirId, currentDirData.childDir,currentDirData.childNote)
-
-        // 画面を再読み込み
         initialize();
     }
 
@@ -115,12 +99,12 @@ export const DirViewScreen: React.FC = () => {
                 <ScrollView>
 
                     {/* ↓↓　開発用コード　↓↓　//////////////////////////////////////////////////// */}
-                    <View>
+                    {/* <View>
                         <Pressable onPress={onPressDeleteAllItems}>
                             <Text style={{color: 'rgb(0,0,255)'}}>データ全削除</Text><Text>　</Text>
                         </Pressable>
-                        <Text>■currentDirData : </Text>
-                        <Text>{JSON.stringify(currentDirData)}</Text><Text>　</Text>
+                        <Text>■globalValue.currentDirData : </Text>
+                        <Text>{JSON.stringify(globalValue.currentDirData)}</Text><Text>　</Text>
                         <Text>■allItemsChildDir :  </Text>
                         <Text>{JSON.stringify(allItemsChildDir)}</Text><Text> </Text>
                         <Text>■allItemsChildNote :  </Text>
@@ -129,7 +113,7 @@ export const DirViewScreen: React.FC = () => {
                         <Text>{JSON.stringify(allKeys)}</Text><Text>　</Text>
                         <Text>■allItems : </Text>
                         <Text>{JSON.stringify(allItems)}</Text><Text>　</Text>
-                    </View>
+                    </View> */}
                     {/* ↑↑　開発用コード　↑↑　///////////////////////////////////////////////// */}
                     
 
@@ -152,9 +136,9 @@ export const DirViewScreen: React.FC = () => {
 
                                 {
                                     // ヘッダーの編集ボタン押下に応じて「削除」ボタンの表示/非表示を切り替える
-                                    isEditable == true ?
+                                    globalValue.isEdit == true ?
                                     <View style={styles.actions}>
-                                        <Pressable onPress={() => onPressDelete("dir", item.id)} >
+                                        <Pressable onPress={() => onPressDelete(item.id)} >
                                             <Text style={styles.deleteButton}>削除</Text>
                                         </Pressable>
                                     </View>
@@ -173,7 +157,7 @@ export const DirViewScreen: React.FC = () => {
                         keyExtractor={item => `${item?.id}`}
                         renderItem={({ item }) => (
                             <View style={styles.dataRow}>
-                                <Pressable style={styles.dataRowItem} onPress={() => {navigation.push("NoteView", {id:item.id, parentDirId:item.parentDirId})}}>
+                                <Pressable style={styles.dataRowItem} onPress={() => {navigation.push("NoteView", {id: item.id, parentDirId: item.parentDirId})}}>
                                     <Svg fill="#11f" width="32" height="32" viewBox="0 0 24 24"><Path d="M4 22v-20h16v11.543c0 4.107-6 2.457-6 2.457s1.518 6-2.638 6h-7.362zm18-7.614v-14.386h-20v24h10.189c3.163 0 9.811-7.223 9.811-9.614zm-5-1.386h-10v-1h10v1zm0-4h-10v1h10v-1zm0-3h-10v1h10v-1z" /></Svg>
                                     <View>
                                         <Text style={styles.textMedium}>  {item?.text}</Text>
@@ -184,9 +168,9 @@ export const DirViewScreen: React.FC = () => {
 
                                 {
                                     // ヘッダーの編集ボタン押下に応じて「削除」ボタンの表示/非表示を切り替える
-                                    isEditable == true ?
+                                    globalValue.isEdit == true ?
                                     <View style={styles.actions}>
-                                        <Pressable onPress={() => onPressDelete("note", item.id)} >
+                                        <Pressable onPress={() => onPressDelete(item.id)} >
                                             <Text style={styles.deleteButton}>削除</Text>
                                         </Pressable>
                                     </View>
