@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
-import { loadAllItems, deleteItem } from "./store"; //DB操作
-import { GlobalValue } from "./globalValue";        //画面越しの値共有
+import { loadAllItems, deleteItem } from "./store";     //DB操作
+// import { GlobalValue } from "./globalValue";         //画面越しの値共有
 
-//画面越しの値共有
-const {globalValue, updateGlobalValue} = useContext(GlobalValue);
+// 画面越しの値共有
+// const {globalValue, updateGlobalValue} = useContext(GlobalValue);
 
 
 
@@ -24,6 +24,7 @@ export function UnixTimeFormat0(UnixTime: number): string{
     let time = new Date(UnixTime);
     let formatedDate = time.toLocaleDateString();
     let formatedTime = time.toLocaleTimeString("it-IT");
+
     return formatedDate + " " +formatedTime
 }
 

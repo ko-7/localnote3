@@ -11,6 +11,7 @@ import { RootStackParamList } from "../type";
 import { saveItem, loadOneItem } from "../store";  // DB操作
 import Svg,  { Path } from 'react-native-svg';     // SVGを使うためのパッケージ
 
+import { DirViewModal } from './DirViewModal';
 
 // Footer
 export const Footer: React.FC<{screen:string}> = ({screen}) => {
@@ -27,11 +28,9 @@ export const Footer: React.FC<{screen:string}> = ({screen}) => {
 }
 
 
-
 const ActionButtons = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const route = useRoute<RouteProp<RootStackParamList, "NoteView">>();
-
 
 
     const [ currentDirData, setCurrentDirData ] = useState<any>({});
@@ -44,13 +43,13 @@ const ActionButtons = () => {
             await setCurrentDirData(currentDirData);
         }
         initialize();
-    }, [navigation])
+    }, [navigation, route]);
 
 
     // モーダル用のステート、関数
     const [ isModalVisible, setIsModalVisible ] = useState<boolean>(false);
     const toggleModal = () => {
-        setIsModalVisible(!isModalVisible)
+        setIsModalVisible(!isModalVisible);
     }
 
 
@@ -59,13 +58,13 @@ const ActionButtons = () => {
     const onPressMakeDir = async () => {
 
         // ディレクトリ作成
-        let newId = Date.now()
+        let newId = Date.now();
         await saveItem(newId, "dir", dirName, currentDirData.id);
 
         // 親DirのchildDirに追加する
         let parentDirData = currentDirData;
         parentDirData.childDir.push(newId);
-        const { id, dirOrNote, text, parentDirId, childDir, childNote } = parentDirData
+        const { id, dirOrNote, text, parentDirId, childDir, childNote } = parentDirData;
         saveItem(id, dirOrNote, text, parentDirId, childDir, childNote);
 
 
@@ -108,25 +107,27 @@ const ActionButtons = () => {
                 </Pressable>
 
                 {/* モーダル本体 */}
-                <Modal visible={isModalVisible} style={styles.footerModal}>
-                    <View style={styles.footerModalContent}>
-                        <Text style={styles.footerModalTitle}>フォルダ名を入力してください</Text>
+                <Modal visible={isModalVisible} transparent={true} style={styles.footerModal}>
+                    <View style={styles.footerModalWrapper}>
+                        <View style={styles.footerModalContent}>
+                            <Text style={styles.footerModalTitle}>フォルダ名を入力してください</Text>
 
-                        {/* フォルダ名入力欄 */}
-                        <TextInput
-                            style={styles.footerModalTextInput}
-                            onChangeText={(text) => setDirName(text)}
-                            placeholder="フォルダ名を入力してください"
-                        />
+                            {/* フォルダ名入力欄 */}
+                            <TextInput
+                                style={styles.footerModalTextInput}
+                                onChangeText={(text) => setDirName(text)}
+                                placeholder="フォルダ名を入力してください"
+                            />
 
-                        {/* モーダル内のアクションボタン */}
-                        <View style={styles.footerModalActionButtons}>
-                            <Pressable style={styles.footerModalActionButton} onPress={toggleModal}>
-                                <Text style={styles.footerModalActionButtonText}>キャンセル</Text>
-                            </Pressable>
-                            <Pressable style={styles.footerModalActionButton} onPress={onPressMakeDir}>
-                                <Text style={styles.footerModalActionButtonText}>作成</Text>
-                            </Pressable>
+                            {/* モーダル内のアクションボタン */}
+                            <View style={styles.footerModalActionButtons}>
+                                <Pressable style={styles.footerModalActionButton} onPress={toggleModal}>
+                                    <Text style={styles.footerModalActionButtonText}>キャンセル</Text>
+                                </Pressable>
+                                <Pressable style={styles.footerModalActionButton} onPress={onPressMakeDir}>
+                                    <Text style={styles.footerModalActionButtonText}>保存</Text>
+                                </Pressable>
+                            </View>
                         </View>
                     </View>
                 </Modal>

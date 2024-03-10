@@ -45,8 +45,6 @@ export async function loadSomeItems(ids:any|null){
 
 
 
-
-
 // 削除
 export async function deleteItem(id:number):Promise<void|Error>{
     const key:string = `${id}`
@@ -87,7 +85,9 @@ export async function getAllKeys():Promise<any[]|Error>{
 
 
 // アプリ初回起動時に以下データ作成/////////////////////////////////////////
+
 export async function createInitialData(){
+
     try {
 
         //初期データ作成済みかを確認
@@ -114,7 +114,10 @@ export async function createInitialData(){
             await AsyncStorage.setItem(`${key}`, JSON.stringify(initialData));
             
             console.log('initial data create!');
+
+            return true;  //データ作成したならtrue
         }
+        return false;  //作成済みで、今回作成してないならfalse
     } catch(error){
         console.error('Error initializing app data:', error);
     }

@@ -1,6 +1,14 @@
 import { StyleSheet } from "react-native";
 
+// 共通の値を定義
+const commonVal = {
+    textLarge: 24,
+    textMedium: 18,
+    textSmall: 12,
+    actionButtonColor: "#33f",
+}
 
+// スタイルを定義
 export const styles = StyleSheet.create({
     //共通
     container: {
@@ -9,13 +17,11 @@ export const styles = StyleSheet.create({
     mainWrapper: { 
         padding: 10,
      },
-    textLarge:  { fontSize: 24, },
-    textMedium: { fontSize: 16, },
-    textSmall:  { fontSize: 12, },
 
-    editButton: {
+    headerButton: {
         marginHorizontal: 10,
-        color: "#33f" ,
+        color: commonVal.actionButtonColor ,
+        fontSize: commonVal.textMedium,
     },
     deleteButton: { color: "#f00" },
 
@@ -34,20 +40,26 @@ export const styles = StyleSheet.create({
         alignItems: "center",
     },
     footerModal: {
-        flex:1,
         // marginHorizontal: "auto",
         justifyContent:'center',
         alignItems:'center',
-        backgroundColor: '#00f',
+    },
+    footerModalWrapper:{
+        flex: 1,
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
     },
     footerModalContent: {
-        flex:1,
-        justifyContent:'flex-start',
+        width: "90%",
+        height: "36%",
+        justifyContent:'center',
         alignItems:'center',
+        backgroundColor: "#fff",
+        borderRadius: 30,
     },
     footerModalTitle: {
         fontSize: 16,
-        paddingTop: 50,
         marginLeft: "auto",
         marginRight: "auto",
         marginBottom: 30,
@@ -72,7 +84,7 @@ export const styles = StyleSheet.create({
     },
     footerModalActionButtonText: {
         textAlign: "center",
-        color: "#33f",
+        color: commonVal.actionButtonColor,
     },
 
     //DirViewScreen
@@ -94,11 +106,21 @@ export const styles = StyleSheet.create({
         borderBottomColor: "#ccc",
     },
     dataRowItem: {
-        width: "90%",
+        width: "70%",
         flexDirection: "row",
         alignItems: "center",
+        height: 24,
+    },
+    dirviewListText: {
+        fontSize: commonVal.textMedium
     },
     actions: {
+        flex:1,
+        flexDirection: "row",
+        justifyContent: "flex-end"
+    },
+    action:{
+        marginLeft: 10,
         flexDirection: "row"
     },
 
@@ -106,7 +128,11 @@ export const styles = StyleSheet.create({
     //NoteViewScreen
     textArea: {
         flex: 1,
-        alignItems: "flex-start",
-        justifyContent: "flex-start",
+        paddingHorizontal: 20,
+        paddingVertical: 20,
+        textAlignVertical: "top",
+        fontSize: commonVal.textMedium
+        // alignItems: "flex-start",
+        // justifyContent: "flex-start",
     },
 })

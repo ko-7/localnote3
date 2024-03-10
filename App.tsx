@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState,useRef } from "react";
+import React, { useLayoutEffect, useEffect, useContext, useState,useRef } from "react";
 import { StatusBar } from "expo-status-bar";
 import { View, Text, TextInput, Pressable, AppRegistry } from "react-native";
 import { styles } from "./src/style";
@@ -13,7 +13,6 @@ import { RootStackParamList } from "./src/type";
 // AsyncStorageに初期データ作成
 import { createInitialData } from './src/store';
 
-
 // 画面
 import DirViewScreen from "./src/screens/DirViewScreen";    // 画面１
 import NoteViewScreen from "./src/screens/NoteViewScreen";  // 画面２
@@ -24,7 +23,7 @@ import NoteViewScreen from "./src/screens/NoteViewScreen";  // 画面２
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App(){
-  
+
 
 
   // 画面越しの値共有
@@ -39,18 +38,22 @@ export default function App(){
   }
  
 
-  useEffect(() => {
+  // useLayoutEffect(() => {
+  
+  //   // AsyncStorageに初期データ作成
+  //   createInitialData();
 
-    // AsyncStorageに初期データ作成
-    createInitialData();
-
-  }, []);
+  // }, []);
 
 
   return(
     // <GlobalValueProvider>
       <NavigationContainer>
-        <View style={{flex:1}}>
+        
+        {/* 初期データ作成処理（NavigationContainer内のみnavigation使用可能のため、コンポーネント化してここに配置） */}
+        {/* <InitialDataCreate /> */}
+
+        <View style={{flex:1}}> 
 
 
           {/* メインコンテンツ */}

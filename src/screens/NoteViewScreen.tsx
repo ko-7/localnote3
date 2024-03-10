@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useLayoutEffect } from "react";
 import { SafeAreaView, KeyboardAvoidingView, View, Text, Pressable, TextInput } from "react-native";
 import { styles } from "../style"   // スタイルの読み込み
 import { Footer } from "../components/Footer";
@@ -14,12 +14,37 @@ export const NoteViewScreen: React.FC = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, "NoteView">>();
     const route = useRoute<RouteProp<RootStackParamList, "NoteView">>();
 
-
     // ステートの定義
-    const [ id, setId ] = useState<number|null>(route.params.id);
+    const [ id, setId ] = useState<number>(route.params.id);
     const [ note, setNote ] = useState<any>({});
     const [ text, setText ] = useState<string>("");
     const [ parentDirData, setParentDirData ] = useState<any>({});
+
+
+    // ヘッダー「保存」ボタンの実装
+    const onPressSave = async () => {
+        await saveItem(id, "note", text, parentDirData.id);
+        navigation.navigate("DirView", {id: parentDirData.id});
+    };
+    useLayoutEffect(() => {
+
+        // Headerタイトルの設定
+        navigation.setOptions({
+            title: ``,
+        });
+
+        // Headerに「編集」ボタンを配置
+        navigation.setOptions({
+            headerRight: () => (
+                <View>
+                    <Pressable onPress={() => onPressSave()} >
+                        <Text style={styles.headerButton}>保存</Text>
+                    </Pressable>
+                </View>
+            )
+        })
+    })
+
 
     const initialize = async () => {
 
@@ -54,17 +79,6 @@ export const NoteViewScreen: React.FC = () => {
     }
 
 
-    // 保存処理
-    const onPressSave = async () => {
-        if(id){
-            await saveItem(id, "note", text, parentDirData.id);
-        }else{
-            await saveItem(Date.now(),"note", text, parentDirData.id);
-        }
-        navigation.navigate("DirView", {id: parentDirData.id});
-    };
-
-
     return (
         <SafeAreaView style={styles.container}>
 
@@ -77,15 +91,12 @@ export const NoteViewScreen: React.FC = () => {
                         placeholder="メモを入力してください"
                         defaultValue={note.text}
                     />
-                    <Pressable onPress={onPressSave}>
-                        <Text>保存</Text>
-                    </Pressable>
                 </KeyboardAvoidingView>
             </View>
 
 
             {/* 広告を表示させる ※表示させるときはFooterをflex:1にする！ */}
-            {/* <View style={[{flex:1, backgroundColor:"#00f"}]}>
+            {/* <View style={[{flex:1, backgroundColor:"#555"}]}>
                 <Text>広告</Text>
             </View> */}
 
