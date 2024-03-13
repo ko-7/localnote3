@@ -68,7 +68,6 @@ const ActionButtons = () => {
         saveItem(id, dirOrNote, text, parentDirId, childDir, childNote);
 
 
-
         // Modalを閉じ、作成したフォルダに移動
         toggleModal();
         navigation.push("DirView", {id: newId});
@@ -77,19 +76,7 @@ const ActionButtons = () => {
 
     // ノート作成機能
     const onPressMakeNote = async () => {
-
-        // ノートの作成
-        let newId = Date.now()
-        await saveItem(newId, "note", null, currentDirData.id);
-
-        // 親DirのchildNoteに追加する
-        let parentDirData = currentDirData;
-        parentDirData.childNote.push(newId);
-        const { id, dirOrNote, text, parentDirId, childDir, childNote } = parentDirData
-        saveItem(id, dirOrNote, text, parentDirId, childDir, childNote);
-
-        // 作成したノートに移動
-        navigation.push("NoteView", {id: newId, parentDirId: currentDirData.id});
+        navigation.push("NoteView", {id: 999, parentDirId: currentDirData.id});
     }
 
 

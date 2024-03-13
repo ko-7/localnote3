@@ -10,7 +10,7 @@ import { saveItem, loadOneItem } from "../store";  // DB操作
 import Svg,  { Path } from 'react-native-svg';     // SVGを使うためのパッケージ
 
 
-export const DirViewModal: React.FC<{id:number,updateIsModalOpened:any}> = ({id, updateIsModalOpened}) => {
+export const DirViewEditModal: React.FC<{id:number,updateIsDirViewEditModalOpened:any}> = ({id, updateIsDirViewEditModalOpened}) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const route = useRoute<RouteProp<RootStackParamList>>();
 
@@ -20,7 +20,7 @@ export const DirViewModal: React.FC<{id:number,updateIsModalOpened:any}> = ({id,
         setIsModalVisible(!isModalVisible)
 
         // モーダルが閉じたことを親に伝える
-        updateIsModalOpened();
+        updateIsDirViewEditModalOpened();
     }
 
     // フォルダ名の更新後データを格納する

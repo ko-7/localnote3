@@ -15,22 +15,50 @@ export const NoteViewScreen: React.FC = () => {
     const route = useRoute<RouteProp<RootStackParamList, "NoteView">>();
 
     // ステートの定義
-    const [ id, setId ] = useState<number>(route.params.id);
+    const [ noteId, setNoteId ] = useState<number>(route.params.id);
     const [ note, setNote ] = useState<any>({});
-    const [ text, setText ] = useState<string>("");
+    const [ noteText, setNoteText ] = useState<string>("");
     const [ parentDirData, setParentDirData ] = useState<any>({});
+
+
+    const initialize = async () => {
+        // 親ディレクトリのデータ取得（Headerタイトルに表示させるため）
+        let parentDirData = await loadOneItem(route.params.parentDirId);
+        await setParentDirData(parentDirData);
+    }
+
+    // 画面初期化
+    useEffect(() => {
+        initialize();
+    }, [navigation])
 
 
     // ヘッダー「保存」ボタンの実装
     const onPressSave = async () => {
-        await saveItem(id, "note", text, parentDirData.id);
+        if(noteId == 999){
+            // idの生成
+            let newNoteId = Date.now()
+            await setNoteId(newNoteId);
+            await console.log(noteId);
+
+            // 親DirのchildNoteに追加する
+            let parentDirData0 = parentDirData;
+            parentDirData0.childNote.push(newNoteId);
+            const { id, dirOrNote, text, parentDirId, childDir, childNote } = parentDirData0
+            await saveItem(id, dirOrNote, text, parentDirId, childDir, childNote);
+            await saveItem(newNoteId, "note", noteText, parentDirData.id);
+        }else{
+            await saveItem(noteId, "note", noteText, parentDirData.id);
+        }
         navigation.navigate("DirView", {id: parentDirData.id});
+        // navigation.goBack();
     };
     useLayoutEffect(() => {
 
         // Headerタイトルの設定
         navigation.setOptions({
             title: ``,
+            // title: `${parentDirData.text}`   // ⇐親ディレクトリのタイトルを表示
         });
 
         // Headerに「編集」ボタンを配置
@@ -46,37 +74,21 @@ export const NoteViewScreen: React.FC = () => {
     })
 
 
-    const initialize = async () => {
-
-        // 親ディレクトリのデータ取得（Headerタイトルに表示させるため）
-        let parentDirData = await loadOneItem(route.params.parentDirId);
-        await setParentDirData(parentDirData);
-
-        // Headerタイトルの表示
-        navigation.setOptions({
-            title: ``,                       // ⇐タイトル無し
-            // title: `${parentDirData.text}`   // ⇐親ディレクトリのタイトルを表示
-        })
-    }
-
-    // 画面初期化
-    useEffect(() => {
-        initialize();
-    }, [navigation])
+    
 
 
     // 既存データの編集の際はデータを取得
-    if(id){
-        useEffect(() => {
+    useEffect(() => {
+        if(noteId != 999){
             const initialize = async () => {
-                const newNotes = await loadOneItem(id);
+                const newNotes = await loadOneItem(noteId);
                 setNote(newNotes);
-                setText(newNotes.text);
+                setNoteText(newNotes.text);
             }
             const unsubscribe = navigation.addListener("focus", initialize);
             return unsubscribe;
-        }, []);
-    }
+        }
+    }, []);
 
 
     return (
@@ -86,7 +98,7 @@ export const NoteViewScreen: React.FC = () => {
                 <KeyboardAvoidingView style={styles.container}>
                     <TextInput
                         style={styles.textArea}
-                        onChangeText={(text) => setText(text)}
+                        onChangeText={(text) => setNoteText(text)}
                         multiline
                         placeholder="メモを入力してください"
                         defaultValue={note.text}

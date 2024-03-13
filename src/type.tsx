@@ -7,7 +7,4 @@ export type RootStackParamList = {
       id: number,
       parentDirId: number,
     };
-    Screen: {
-      save: any
-    }
   }

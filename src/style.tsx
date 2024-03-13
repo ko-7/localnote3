@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 
 // 共通の値を定義
-const commonVal = {
+export const commonVal = {
     textLarge: 24,
     textMedium: 18,
     textSmall: 12,
