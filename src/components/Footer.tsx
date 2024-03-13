@@ -11,7 +11,7 @@ import { RootStackParamList } from "../type";
 import { saveItem, loadOneItem } from "../store";  // DB操作
 import Svg,  { Path } from 'react-native-svg';     // SVGを使うためのパッケージ
 
-import { DirViewModal } from './DirViewModal';
+import { DirViewEditModal } from './DirViewEditModal';
 
 // Footer
 export const Footer: React.FC<{screen:string}> = ({screen}) => {

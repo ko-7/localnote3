@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     displayButton: {
         flex: 1,
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "flex-end",
     },
     displayButtonText: {
         color: "#f33",

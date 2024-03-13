@@ -77,6 +77,7 @@ export const DirViewScreen: React.FC = () => {
         })
     })
 
+
     // 開いているフォルダの子フォルダ、子ファイルを取得する
     const [ currentDirData, setCurrentDirData ] = useState<any>({});
     const [ allItemsChildDir, setAllItemsChildDir ] = useState<any>({});
@@ -92,16 +93,16 @@ export const DirViewScreen: React.FC = () => {
         await setAllItemsChildDir(currentAllItemsChildDir);
         let currentAllItemsChildNote = await loadSomeItems(currentDirData?.childNote);
         await setAllItemschildNote(currentAllItemsChildNote);
+
     }
     useEffect(() => {
         initialize();
-        const unsubscribe =  navigation.addListener('focus', () => {initialize()});
+        const unsubscribe =  navigation.addListener('focus', () => {initialize();setIsEditable(false)});
+
+        // returnに設定した処理は画面を離れる時に実行される！
         return unsubscribe;
     }, [isInitialDataCreated, navigation, route.params.id, isDirViewEditModalOpened, isDirViewDeleteModalOpened]);
 
-
-    
-    
 
 
     // ↓↓　開発用コード　↓↓/////////////////////////////////////////////
@@ -143,21 +144,21 @@ export const DirViewScreen: React.FC = () => {
                 <ScrollView>
 
                     {/* ↓↓　開発用コード　↓↓　//////////////////////////////////////////////////// */}
-                    <View>
+                    {/* <View>
                         <Pressable onPress={onPressDeleteAllItems}>
                             <Text style={{color: 'rgb(0,0,255)'}}>データ全削除</Text><Text>　</Text>
                         </Pressable>
-                        {/* <Text>■currentDirData : </Text> */}
-                        {/* <Text>{JSON.stringify(currentDirData)}</Text><Text>　</Text> */}
-                        {/* <Text>■allItemsChildDir :  </Text> */}
-                        {/* <Text>{JSON.stringify(allItemsChildDir)}</Text><Text> </Text> */}
-                        {/* <Text>■allItemsChildNote :  </Text> */}
-                        {/* <Text>{JSON.stringify(allItemsChildNote)}</Text><Text> </Text> */}
+                        <Text>■currentDirData : </Text>
+                        <Text>{JSON.stringify(currentDirData)}</Text><Text>　</Text>
+                        <Text>■allItemsChildDir :  </Text>
+                        <Text>{JSON.stringify(allItemsChildDir)}</Text><Text> </Text>
+                        <Text>■allItemsChildNote :  </Text>
+                        <Text>{JSON.stringify(allItemsChildNote)}</Text><Text> </Text>
                         <Text>■allKeys : </Text>
                         <Text>{JSON.stringify(allKeys)}</Text><Text>　</Text>
-                        {/* <Text>■allItems : </Text> */}
-                        {/* <Text>{JSON.stringify(allItems)}</Text><Text>　</Text> */}
-                    </View>
+                        <Text>■allItems : </Text>
+                        <Text>{JSON.stringify(allItems)}</Text><Text>　</Text>
+                    </View> */}
                     {/* ↑↑　開発用コード　↑↑　///////////////////////////////////////////////// */}
                     
 
@@ -172,7 +173,13 @@ export const DirViewScreen: React.FC = () => {
                                 {/* <Pressable style={styles.dataRowItem} onPress={() => navigation.navigate("NoteView", {id: item.id})}> */}
                                     <Svg fill="#11f" width="32" height="32" viewBox="0 0 24 24"><Path d="M6.083 4c1.38 1.612 2.578 3 4.917 3h11v13h-20v-16h4.083zm.917-2h-7v20h24v-17h-13c-1.629 0-2.305-1.058-4-3z" /></Svg>
                                     <View>
-                                        <Text style={styles.dirviewListText}>  {item?.text}  {item.id}</Text>
+                                        <Text style={styles.dirviewListText}>
+                                            {
+                                                item?.text.length > 30
+                                                ? " " + item?.text.substr(0, 30) + "..."
+                                                : " " + item?.text
+                                            }
+                                        </Text>
                                         {/* <Text style={styles.textSmall}>　　作成日時：{UnixTimeFormat(item.id)}</Text> */}
                                     </View>
                                 </Pressable>
@@ -202,7 +209,13 @@ export const DirViewScreen: React.FC = () => {
                                 <Pressable style={styles.dataRowItem} onPress={() => {navigation.push("NoteView", {id:item.id, parentDirId:item.parentDirId})}}>
                                     <Svg fill="#11f" width="32" height="32" viewBox="0 0 24 24"><Path d="M4 22v-20h16v11.543c0 4.107-6 2.457-6 2.457s1.518 6-2.638 6h-7.362zm18-7.614v-14.386h-20v24h10.189c3.163 0 9.811-7.223 9.811-9.614zm-5-1.386h-10v-1h10v1zm0-4h-10v1h10v-1zm0-3h-10v1h10v-1z" /></Svg>
                                     <View>
-                                        <Text style={styles.dirviewListText}>  {item?.text}  {item.id}</Text>
+                                        <Text style={styles.dirviewListText}>
+                                            {
+                                                item?.text.length > 30
+                                                ? " " + item?.text.substr(0, 30) + "..."
+                                                : " " + item?.text
+                                            }
+                                        </Text>
                                         {/* <Text style={styles.textSmall}>　　作成日時：{UnixTimeFormat(item.id)}</Text> */}
                                     </View>
                                 </Pressable>
@@ -211,12 +224,8 @@ export const DirViewScreen: React.FC = () => {
                                     // ヘッダーの編集ボタン押下に応 じて「削除」ボタンの表示/非表示を切り替える
                                     isEditable == true ?
                                     <View style={styles.actions}>
-                                        <View style={styles.action}>
+                                        <Text></Text>
                                         <DirViewDeleteModal id={item.id} dirOrNote={item.dirOrNote} updateIsDirViewDeleteModalOpened={updateIsDirViewDeleteModalOpened} />
-                                            {/* <Pressable onPress={() => onPressNoteDelete(item.id)} >
-                                                <Text style={styles.deleteButton}>削除</Text>
-                                            </Pressable> */}
-                                        </View>
                                     </View>
                                     :
                                     null

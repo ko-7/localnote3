@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    mainWrapper: { 
+    mainWrapper: {
         padding: 10,
      },
 
@@ -25,11 +25,11 @@ export const styles = StyleSheet.create({
     },
     deleteButton: { color: "#f00" },
 
+
     //Footer
     footer: {
         flex: 1,
         backgroundColor: "#555",
-        // display: "flex",
         flexDirection: "row",
         justifyContent: "space-around",
         alignItems: "center",
@@ -115,13 +115,9 @@ export const styles = StyleSheet.create({
         fontSize: commonVal.textMedium
     },
     actions: {
-        flex:1,
+        flex: 1,
+        paddingHorizontal: 10,
         flexDirection: "row",
-        justifyContent: "flex-end"
-    },
-    action:{
-        marginLeft: 10,
-        flexDirection: "row"
     },
 
 
