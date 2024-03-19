@@ -11,7 +11,7 @@ import { RootStackParamList } from "../type";
 import { saveItem, loadOneItem } from "../store";  // DB操作
 import Svg,  { Path } from 'react-native-svg';     // SVGを使うためのパッケージ
 
-import { DirViewEditModal } from './DirViewEditModal';
+// import { DirViewEditModal } from './DirViewEditModal';
 
 // Footer
 export const Footer: React.FC<{screen:string}> = ({screen}) => {
@@ -28,22 +28,9 @@ export const Footer: React.FC<{screen:string}> = ({screen}) => {
 }
 
 
-const ActionButtons = () => {
+const ActionButtons: React.FC = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-    const route = useRoute<RouteProp<RootStackParamList, "NoteView">>();
-
-
-    const [ currentDirData, setCurrentDirData ] = useState<any>({});
-    useEffect(() => {
-        const initialize = async () => {
-
-            // カレントディレクトリのデータをDBから取得する
-            let currentDirData = await loadOneItem(route.params.id);
-            // let currentDirData = await loadOneItem(globalValue.currentDirData.id);
-            await setCurrentDirData(currentDirData);
-        }
-        initialize();
-    }, [navigation, route]);
+    const route = useRoute<RouteProp<RootStackParamList, "DirView">>();
 
 
     // モーダル用のステート、関数
@@ -56,16 +43,17 @@ const ActionButtons = () => {
     // ディレクトリ作成機能
     const [ dirName, setDirName ] = useState<string>("");  // ⇐モーダルのフォルダ名入力欄で入力する
     const onPressMakeDir = async () => {
+        let currentDirData = await loadOneItem(route.params.id);
 
         // ディレクトリ作成
         let newId = Date.now();
         await saveItem(newId, "dir", dirName, currentDirData.id);
 
         // 親DirのchildDirに追加する
-        let parentDirData = currentDirData;
-        parentDirData.childDir.push(newId);
+        let parentDirData = await currentDirData;
+        await parentDirData.childDir.push(newId);
         const { id, dirOrNote, text, parentDirId, childDir, childNote } = parentDirData;
-        saveItem(id, dirOrNote, text, parentDirId, childDir, childNote);
+        await saveItem(id, dirOrNote, text, parentDirId, childDir, childNote);
 
 
         // Modalを閉じ、作成したフォルダに移動
@@ -76,6 +64,7 @@ const ActionButtons = () => {
 
     // ノート作成機能
     const onPressMakeNote = async () => {
+        let currentDirData = await loadOneItem(route.params.id);
         navigation.push("NoteView", {id: 999, parentDirId: currentDirData.id});
     }
 

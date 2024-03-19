@@ -9,7 +9,11 @@ import { RootStackParamList } from "../type";                                   
 import { saveItem, loadOneItem, deleteItem } from "../store";  // DB操作
 import Svg,  { Path } from 'react-native-svg';     // SVGを使うためのパッケージ
 
-
+/*
+    id: 削除対象のディレクトリ、ノートのID
+    dirOrNote: 削除対象がdirかnoteかを受け取る
+    updateIsDirViewDeleteModalOpened: モーダルOn/Offを管理する関数。On/Offを親に伝えたいので関数を親で定義する
+*/
 export const DirViewDeleteModal: React.FC<{id:number, dirOrNote:string, updateIsDirViewDeleteModalOpened:any}> = ({id, dirOrNote, updateIsDirViewDeleteModalOpened}) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const route = useRoute<RouteProp<RootStackParamList>>();
@@ -29,7 +33,7 @@ export const DirViewDeleteModal: React.FC<{id:number, dirOrNote:string, updateIs
     useEffect(() => {
         const load = async () => {
             let targetItem = await loadOneItem(id);
-            setTargetItem(targetItem);
+            await setTargetItem(targetItem);
         }
         load();
     }, [])
@@ -67,28 +71,28 @@ export const DirViewDeleteModal: React.FC<{id:number, dirOrNote:string, updateIs
         // 対象フォルダ、の子フォルダ、子ノートを一括削除
         let targetItems = [id, ...result.margedChildArray];
         for(const item of targetItems){
-            deleteItem(item);
+            await deleteItem(item);
         }
 
 
         // 親のchildDirから削除する
         let parentDirData = await loadOneItem(targetItem.parentDirId);
-        parentDirData.childDir = parentDirData.childDir.filter((item:number) => item !== id);
-        saveItem(parentDirData.id,parentDirData.dirOrnote, parentDirData.text, parentDirData.parentDirId, parentDirData.childDir, parentDirData.childNote)
+        parentDirData.childDir = await parentDirData.childDir.filter((item:number) => item != id);
+        await saveItem(parentDirData.id ,parentDirData.dirOrnote, parentDirData.text, parentDirData.parentDirId, parentDirData.childDir, parentDirData.childNote)
 
-        await toggleModal();
+        toggleModal();
     }
 
     const onPressNoteDelete = async () => {
         // 対象ノートのデータ削除
-        deleteItem(id);
+        await deleteItem(id);
 
         // 親のchildNoteから削除する
         let parentDirData = await loadOneItem(targetItem.parentDirId);
-        parentDirData.childNote = parentDirData.childNote.filter((item:number) => item !== id);
-        saveItem(parentDirData.id,parentDirData.dirOrnote, parentDirData.text, parentDirData.parentDirId, parentDirData.childDir, parentDirData.childNote)
+        parentDirData.childNote = await parentDirData.childNote.filter((item:number) => item != id);
+        await saveItem(parentDirData.id,parentDirData.dirOrnote, parentDirData.text, parentDirData.parentDirId, parentDirData.childDir, parentDirData.childNote)
     
-        await toggleModal();
+        toggleModal();
     }
 
 
