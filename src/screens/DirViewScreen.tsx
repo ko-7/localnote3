@@ -144,21 +144,21 @@ export const DirViewScreen: React.FC = () => {
                 <ScrollView>
 
                     {/* ↓↓　開発用コード　↓↓　//////////////////////////////////////////////////// */}
-                    <View>
+                    {/* <View>
                         <Pressable onPress={onPressDeleteAllItems}>
                             <Text style={{color: 'rgb(0,0,255)'}}>データ全削除</Text><Text>　</Text>
                         </Pressable>
                         <Text>■currentDirData : </Text>
                         <Text>{JSON.stringify(currentDirData)}</Text><Text>　</Text>
-                        {/* <Text>■allItemsChildDir :  </Text> */}
-                        {/* <Text>{JSON.stringify(allItemsChildDir)}</Text><Text> </Text> */}
-                        {/* <Text>■allItemsChildNote :  </Text> */}
-                        {/* <Text>{JSON.stringify(allItemsChildNote)}</Text><Text> </Text> */}
+                        <Text>■allItemsChildDir :  </Text>
+                        <Text>{JSON.stringify(allItemsChildDir)}</Text><Text> </Text>
+                        <Text>■allItemsChildNote :  </Text>
+                        <Text>{JSON.stringify(allItemsChildNote)}</Text><Text> </Text>
                         <Text>■allKeys : </Text>
                         <Text>{JSON.stringify(allKeys)}</Text><Text>　</Text>
                         <Text>■allItems : </Text>
                         <Text>{JSON.stringify(allItems)}</Text><Text>　</Text>
-                    </View>
+                    </View> */}
                     {/* ↑↑　開発用コード　↑↑　///////////////////////////////////////////////// */}
                     
 
